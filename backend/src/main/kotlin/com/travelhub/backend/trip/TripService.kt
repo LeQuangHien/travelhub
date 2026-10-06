@@ -3,7 +3,9 @@ package com.travelhub.backend.trip
 import org.springframework.stereotype.Service
 
 @Service
-class TripService {
+class TripService(
+    private val tripRepository: TripRepository
+) {
 
     private val trips = mutableListOf(
         Trip(1, "Tokyo", "Japan"),
@@ -17,43 +19,35 @@ class TripService {
         trips.find { it.id == id }
             ?: throw TripNotFoundException(id)
 
-    fun createTrip(request: CreateTripRequest): Trip {
-        val nextId = (trips.maxOfOrNull { it.id } ?: 0) + 1
+    fun createTrip(
+        request: CreateTripRequest
+    ): Trip {
 
         val trip = Trip(
-            id = nextId,
             destination = request.destination,
             country = request.country
         )
 
-        trips.add(trip)
-
-        return trip
+        return tripRepository.save(trip)
     }
 
-    fun updateTrip(id: Long, request: UpdateTripRequest): Trip? {
-        val index = trips.indexOfFirst { it.id == id }
+    fun updateTrip(
+        id: Long,
+        request: UpdateTripRequest
+    ): Trip {
 
-        if (index == -1) {
-            throw TripNotFoundException(id)
-        }
+        val trip = getTrip(id)
 
-        val updatedTrip = Trip(
-            id = id,
-            destination = request.destination,
-            country = request.country
-        )
+        trip.destination = request.destination
+        trip.country = request.country
 
-        trips[index] = updatedTrip
-
-        return updatedTrip
+        return tripRepository.save(trip)
     }
 
     fun deleteTrip(id: Long) {
-        val deleted = trips.removeIf { it.id == id }
 
-        if (!deleted) {
-            throw TripNotFoundException(id)
-        }
+        val trip = getTrip(id)
+
+        tripRepository.delete(trip)
     }
 }

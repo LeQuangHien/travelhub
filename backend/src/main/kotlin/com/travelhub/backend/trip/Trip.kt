@@ -1,7 +1,16 @@
 package com.travelhub.backend.trip
 
-data class Trip(
-    val id: Long,
-    val destination: String,
-    val country: String
+import jakarta.persistence.*
+
+@Entity
+@Table(name = "trips")
+class Trip(
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+
+    var destination: String,
+
+    var country: String
 )
