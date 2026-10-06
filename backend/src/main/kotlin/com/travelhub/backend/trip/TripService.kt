@@ -13,8 +13,9 @@ class TripService {
 
     fun getTrips(): List<Trip> = trips
 
-    fun getTrip(id: Long): Trip? =
+    fun getTrip(id: Long): Trip =
         trips.find { it.id == id }
+            ?: throw TripNotFoundException(id)
 
     fun createTrip(request: CreateTripRequest): Trip {
         val nextId = (trips.maxOfOrNull { it.id } ?: 0) + 1
@@ -34,7 +35,7 @@ class TripService {
         val index = trips.indexOfFirst { it.id == id }
 
         if (index == -1) {
-            return null
+            throw TripNotFoundException(id)
         }
 
         val updatedTrip = Trip(
@@ -48,7 +49,11 @@ class TripService {
         return updatedTrip
     }
 
-    fun deleteTrip(id: Long): Boolean {
-        return trips.removeIf { it.id == id }
+    fun deleteTrip(id: Long) {
+        val deleted = trips.removeIf { it.id == id }
+
+        if (!deleted) {
+            throw TripNotFoundException(id)
+        }
     }
 }

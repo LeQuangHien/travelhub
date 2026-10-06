@@ -18,11 +18,8 @@ class TripController(
     @GetMapping("/{id}")
     fun getTrip(
         @PathVariable id: Long
-    ): ResponseEntity<Trip> {
-        val trip = tripService.getTrip(id)
-            ?: return ResponseEntity.notFound().build()
-
-        return ResponseEntity.ok(trip)
+    ): Trip {
+        return tripService.getTrip(id)
     }
 
     @PostMapping
@@ -53,10 +50,6 @@ class TripController(
     ): ResponseEntity<Void> {
         val deleted = tripService.deleteTrip(id)
 
-        return if (deleted) {
-            ResponseEntity.noContent().build()
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        return ResponseEntity.noContent().build()
     }
 }
