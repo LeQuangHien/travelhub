@@ -15,7 +15,8 @@ class BookingController(
     fun createBooking(
         @PathVariable tripId: Long,
         @Valid @RequestBody request: CreateBookingRequest
-    ): ResponseEntity<Booking> {
+    ): ResponseEntity<BookingResponse> {
+
         val booking = bookingService.createBooking(
             tripId = tripId,
             request = request
@@ -29,7 +30,7 @@ class BookingController(
     @GetMapping
     fun getBookings(
         @PathVariable tripId: Long
-    ): List<Booking> {
+    ): List<BookingResponse> {
         return bookingService.getBookingsForTrip(tripId)
     }
 }

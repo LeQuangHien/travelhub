@@ -6,32 +6,34 @@ import org.springframework.stereotype.Service
 
 @Service
 class BookingService(
-    private val bookingRepository: BookingRepository,
-    private val tripRepository: TripRepository
+    private val bookingRepository: BookingRepository, private val tripRepository: TripRepository
 ) {
 
     fun createBooking(
         tripId: Long,
         request: CreateBookingRequest
-    ): Booking {
+    ): BookingResponse {
+
         val trip = tripRepository.findById(tripId)
             .orElseThrow { TripNotFoundException(tripId) }
-
         val booking = Booking(
             name = request.name,
             trip = trip
         )
 
-        return bookingRepository.save(booking)
+        val savedBooking = bookingRepository.save(booking)
+        return savedBooking.toResponse()
     }
 
     fun getBookingsForTrip(
         tripId: Long
-    ): List<Booking> {
+    ): List<BookingResponse> {
         if (!tripRepository.existsById(tripId)) {
             throw TripNotFoundException(tripId)
         }
 
-        return bookingRepository.findByTripId(tripId)
+        return bookingRepository
+            .findByTripId(tripId)
+            .map { it.toResponse() }
     }
 }
